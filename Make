@@ -1,0 +1,13 @@
+#!/bin/bash
+
+#  set env if not already available in the shell environment
+#JAVA_HOME=<PATH TO JAVA eg /home/abhishek/softwares/jdk1.8.0_77>
+#MAVEN_HOME=<PATH TO MAVEN eg /home/abhishek/softwares/apache-maven-3.3.3>
+
+APP_JAR=hs-contacts-client/target/hs-contacts-client-1.0-SNAPSHOT-full.jar
+
+# Build, run unit tests and package
+$MAVEN_HOME/bin/mvn clean package
+
+## Run the app
+$JAVA_HOME/bin/java -cp $APP_JAR com.hs.tht.contacts.client.App
