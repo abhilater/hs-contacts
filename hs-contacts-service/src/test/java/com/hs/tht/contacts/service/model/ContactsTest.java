@@ -98,4 +98,51 @@ public class ContactsTest {
         Assert.assertEquals("Chris", results.get(0));
     }
 
+    @Test
+    public void testSearchByLastname() {
+        contacts.add("Chris Harris");
+        contacts.add("Chris");
+        contacts.add("Chloe");
+        contacts.add("Harris");
+        List<String> results = contacts.search("Harri");
+        Assert.assertNotNull(results);
+        Assert.assertEquals(2, results.size());
+        Assert.assertEquals("Harris", results.get(0));
+        Assert.assertEquals("Chris Harris", results.get(1));
+    }
+
+    @Test
+    public void testSearchByLastname1() {
+        contacts.add("Chris Harris");
+        contacts.add("Harris Chris");
+        contacts.add("Chris");
+        contacts.add("Harris");
+        List<String> results = contacts.search("Chris");
+        Assert.assertNotNull(results);
+        Assert.assertEquals(3, results.size());
+        Assert.assertEquals("Chris", results.get(0));
+        Assert.assertEquals("Chris Harris", results.get(1));
+        Assert.assertEquals("Harris Chris", results.get(2));
+
+        results = contacts.search("Harris");
+        Assert.assertNotNull(results);
+        Assert.assertEquals(3, results.size());
+        Assert.assertEquals("Harris", results.get(0));
+        Assert.assertEquals("Harris Chris", results.get(1));
+        Assert.assertEquals("Chris Harris", results.get(2));
+    }
+
+    @Test
+    public void testSearchByLastname2() {
+        contacts.add("Chris Harris");
+        contacts.add("Harris Chris");
+        contacts.add("Chris");
+        contacts.add("Harris");
+        List<String> results = contacts.search("Chris H");
+        Assert.assertNotNull(results);
+        Assert.assertEquals(1, results.size());
+        Assert.assertEquals("Chris Harris", results.get(0));
+    }
+
+
 }

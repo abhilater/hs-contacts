@@ -4,7 +4,7 @@ import java.util.List;
 
 /**
  * Represents a service for managing contacts. It supports two operations
- * i) search
+ * i) search (by firstName prefix or lastName prefix)
  * ii) add
  *
  * @author abhishek

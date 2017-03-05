@@ -3,7 +3,8 @@ package com.hs.tht.contacts.service.model;
 import java.util.*;
 
 /**
- * Represent a Contacts data store that allows two operations i) Add contact ii) Prefix search in contacts
+ * Represent a Contacts data store that allows two operations i) Add contact ii) Prefix search in contacts by
+ * firstName as well as lastName prefix
  * <p>
  * Assumptions: i) Search is case-sensitive
  * ii) First name and last name should be separated by a single space (if relevant)
@@ -25,7 +26,20 @@ public class Contacts {
     public void add(String name) {
         if (name == null || name.length() < 1) return;
         // add to trie after trimming the name
-        trie.insert(name.trim());
+        name = name.trim();
+        // check if it contains last name
+        if (containsLastname(name)) {
+            // if lastname, then add both forms i.e FName LName & LName FName to trie
+            trie.insert(name, false);
+            String lastNameFirstName = name.split(" ")[1] + " " + name.split(" ")[0];
+            trie.insert(lastNameFirstName, true);
+        } else {
+            trie.insert(name, false);
+        }
+    }
+
+    private boolean containsLastname(String name) {
+        return name.indexOf(' ') != -1;
     }
 
     public List<String> search(String query) {
@@ -35,8 +49,12 @@ public class Contacts {
         String sanitizedQuery = query.trim();
         List<String> trieResults = trie.search(sanitizedQuery);
 
+        for(String res : trieResults){
+            if(res.contains(sanitizedQuery)) results.add(res);
+        }
+
         // sort results based on length difference between search query and search result lengths
-        results = getResultsSortedOnClosestMatch(sanitizedQuery, trieResults);
+        results = getResultsSortedOnClosestMatch(sanitizedQuery, results);
         return results;
     }
 
@@ -73,6 +91,10 @@ public class Contacts {
          * Flag to mark the TrieNode as leaf
          */
         private boolean isLeaf;
+        /**
+         * Set contains a record and its word reverse if any
+         */
+        private Set<Boolean> reverseSet;
 
         /**
          * Default constructor, initializes the root node
@@ -90,6 +112,7 @@ public class Contacts {
             // input records may have single space separated words
             children.put(' ', null);
             isLeaf = false;
+            reverseSet = new HashSet<>();
         }
     }
 
@@ -101,10 +124,11 @@ public class Contacts {
 
         /**
          * Inserts a new record to the TrieWithSpaceSeparatedWordRecords
+         * isReverse flag is set on leaf node if record is reverse form of it's real self
          *
          * @param record
          */
-        public void insert(String record) {
+        public void insert(String record, boolean isReverse) {
             if (null == record || record.length() < 1) return;
             // iterates over the height of the trie to find place to insert record
             TrieNode itr = root;
@@ -120,7 +144,10 @@ public class Contacts {
                 itr = nextNode;
 
                 // if its the last character of the word, mark the node as leaf
-                if (i == record.length() - 1) itr.isLeaf = true;
+                if (i == record.length() - 1) {
+                    itr.isLeaf = true;
+                    itr.reverseSet.add(isReverse);
+                }
             }
         }
 
@@ -171,8 +198,12 @@ public class Contacts {
                                String prefix, List<String> result) {
 
             // if node is leaf, add the prefix as search record
-            if (currNode.isLeaf)
-                result.add(prefix);
+            if (currNode.isLeaf) {
+                for (boolean isReverse : currNode.reverseSet) {
+                    if (isReverse) result.add(prefix.split(" ")[1] + " " + prefix.split(" ")[0]);
+                    else result.add(prefix);
+                }
+            }
 
             // recurse for all the characters after the prefix
             char currChar;
