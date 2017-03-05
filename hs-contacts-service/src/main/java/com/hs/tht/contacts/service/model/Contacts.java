@@ -49,6 +49,7 @@ public class Contacts {
         String sanitizedQuery = query.trim();
         List<String> trieResults = trie.search(sanitizedQuery);
 
+        // filter out results that do not have searh query as substr
         for(String res : trieResults){
             if(res.contains(sanitizedQuery)) results.add(res);
         }
