@@ -43,6 +43,44 @@ public class ContactsTest {
     }
 
     @Test
+    public void testSearchManyChildren() {
+        String pref = "Ch";
+        for (char i = 'a'; i <= 'z'; i++) {
+            contacts.add(pref + i);
+        }
+        for (char i = 'A'; i <= 'Z'; i++) {
+            contacts.add(pref + i);
+        }
+
+        List<String> results = contacts.search(pref);
+        Assert.assertNotNull(results);
+        Assert.assertEquals(52, results.size());
+
+        results = contacts.search(pref+'Z');
+        Assert.assertNotNull(results);
+        Assert.assertEquals(1, results.size());
+    }
+
+    @Test
+    public void testSearchDeepPrefix() {
+        String pref = "a";
+        String word = "";
+        for (char i = 'a'; i <= 'z'; i++) {
+            word += i;
+        }
+        for (char i = 'A'; i <= 'Z'; i++) {
+            word += i;
+        }
+
+        contacts.add(word);
+
+        List<String> results = contacts.search(pref);
+        Assert.assertNotNull(results);
+        Assert.assertEquals(1, results.size());
+        Assert.assertEquals(word, results.get(0));
+    }
+
+    @Test
     public void testSearchEmpty() {
         contacts.add("DeeDee");
         List<String> results = contacts.search("Ch");
@@ -59,4 +97,5 @@ public class ContactsTest {
         Assert.assertNotNull(results);
         Assert.assertEquals("Chris", results.get(0));
     }
+
 }
